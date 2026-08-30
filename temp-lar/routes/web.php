@@ -8,5 +8,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Product::all();
+    return view('dashboard', [
+        'products' => Product::all()
+    ]);
 });

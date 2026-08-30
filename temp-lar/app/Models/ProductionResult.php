@@ -18,7 +18,7 @@ class ProductionResult extends Model
         'runtime_minutes',
         'good_qty',
         'reject_qty',
-        'achievent',
+        'achievement',
 
     ];
 

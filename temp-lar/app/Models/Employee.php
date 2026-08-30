@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Employee extends Model
 {
     //
-    protected $table = 'employees';
+    protected $table = 'employee';
     protected $primaryKey = 'employee_no';
     public $incrementing = false;
     public $timestamps = false;
