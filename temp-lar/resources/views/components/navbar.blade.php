@@ -17,7 +17,7 @@
                          <a href="/" class=" {{ request()->is('/') ? 'block py-2 px-3 text-white bg-green-700 rounded md:bg-transparent md:text-green-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-200 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 md:dark:hover:bg-transparent'}} " aria-current="page">Dashboard</a>
                      </li>
                      <li>
-                         <a href="/prod-orders" class=" {{ request()->is('prod-orders') ? 'block py-2 px-3 text-white bg-green-700 rounded md:bg-transparent md:text-green-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-200 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 md:dark:hover:bg-transparent'}}">About</a>
+                         <a href="/prod-orders" class=" {{ request()->is('prod-orders') ? 'block py-2 px-3 text-white bg-green-700 rounded md:bg-transparent md:text-green-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-200 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 md:dark:hover:bg-transparent'}}">Production Orders</a>
                      </li>
                      <!-- <li>
                          <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-white md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 md:dark:hover:bg-transparent">Services</a>

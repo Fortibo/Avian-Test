@@ -2,7 +2,7 @@
     <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
             <!-- <p class="text-sm font-semibold uppercase tracking-wide text-green-700">Production Monitoring</p> -->
-            <h1 class="text-2xl font-bold text-slate-950 sm:text-3xl">Dashboard</h1>
+            <h1 class="text-2xl font-bold text-emerald-900 sm:text-3xl">Dashboard</h1>
         </div>
         <div class="inline-flex w-fit items-center rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm font-medium text-green-800">
             API Summary
@@ -66,6 +66,9 @@
             <div class="mt-4 h-72">
                 <canvas id="statusChart"></canvas>
             </div>
+            <div id="statusLegend" class="flex flex-col mt-2 justify-center gap-2">
+
+            </div>
         </div>
 
         <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
@@ -76,10 +79,34 @@
         </div>
     </section>
 
+    <table class="min-w-full mt-4">
+        <thead>
+            <tr class="border-b border-slate-200">
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-emerald-700">
+                    Rank
+                </th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-emerald-700">
+                    Machine
+                </th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-emerald-700">
+                    Code
+                </th>
+                <th class="px-4 py-3 text-right text-xs font-semibold uppercase text-emerald-700">
+                    Good Qty
+                </th>
+            </tr>
+        </thead>
+
+        <tbody id="topMachineTable">
+        </tbody>
+    </table>
+
 
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
+        const statusColors = ['#2563eb', '#16a34a', '#f59e0b', '#e11d48'];
         const formatNumber = (value) => new Intl.NumberFormat('en-US').format(value ?? 0);
 
         function setText(id, value) {
@@ -115,7 +142,7 @@
                                 borderColor: '#16a34a',
                                 backgroundColor: 'rgba(22, 163, 74, 0.12)',
                                 fill: true,
-                                tension: 0.35,
+                                tension: 0.45,
                             },
                             {
                                 label: 'Reject Qty',
@@ -123,7 +150,7 @@
                                 borderColor: '#e11d48',
                                 backgroundColor: 'rgba(225, 29, 72, 0.12)',
                                 fill: true,
-                                tension: 0.35,
+                                tension: 0.45,
                             },
                         ],
                     },
@@ -136,17 +163,72 @@
                 new Chart(document.getElementById('statusChart'), {
                     type: 'doughnut',
                     data: {
-                        labels: data.status_breakdown.map((item) => item.status),
+                        labels: (data.status_breakdown.map((item) => item.status)),
                         datasets: [{
                             data: data.status_breakdown.map((item) => item.total),
                             backgroundColor: ['#2563eb', '#16a34a', '#f59e0b', '#e11d48'],
                         }],
                     },
                     options: {
+
                         responsive: true,
                         maintainAspectRatio: false,
+
                     },
                 });
+
+                const statusLegend = document.getElementById('statusLegend');
+
+                statusLegend.innerHTML = data.status_breakdown.map((item, index) => {
+                    const color = statusColors[index] ?? '#64748b';
+
+                    return `
+                         <div class="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2">
+                             <div class="flex items-center gap-2">
+                                 <span class="h-3 w-3 rounded-full" style="background-color: ${color}"></span>
+                                 <span class="text-sm font-medium text-slate-700">${item.status}</span>
+                             </div>
+                             <span class="text-sm font-bold text-slate-950">${item.total}</span>
+                         </div>
+                         `;
+                }).join('');
+
+                const topMachineTable = document.getElementById('topMachineTable');
+
+                if (topMachineTable) {
+                    topMachineTable.innerHTML = data.top_machines.map((machine, index) => {
+
+                        return `
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+
+                <td class="px-4 py-3 text-sm font-semibold text-emerald-700">
+                    ${index + 1}
+                </td>
+
+                <td class="px-4 py-3">
+                    <div class="text-sm font-semibold text-emerald-900">
+                        ${machine.machine_name}
+                    </div>
+                </td>
+
+                <td class="px-4 py-3">
+                    <span class="text-sm text-emerald-500">
+                        ${machine.machine_code}
+                    </span>
+                </td>
+
+                <td class="px-4 py-3 text-right">
+                    <span class="text-sm font-bold text-emerald-900">
+                        ${formatNumber(machine.good_qty)}
+                    </span>
+                </td>
+
+            </tr>
+        `;
+
+                    }).join('');
+
+                }
 
                 new Chart(document.getElementById('topMachineChart'), {
                     type: 'bar',

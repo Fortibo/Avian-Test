@@ -14,5 +14,9 @@ Route::get('/dashboard', function () {
 });
 
 Route::get('/prod-orders', function () {
-    return view('production-orders');
+    return view('production.production-orders');
+});
+
+Route::get('/production-results', function () {
+    return view('production.create');
 });
