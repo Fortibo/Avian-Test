@@ -1,0 +1,43 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: avian_app
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: avian_nginx
+    ports:
+      - 8000:80
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+  db: 
+    image: mariadb:11
+    container_name: avian_db
+    restart: unless_stopped
+    environment:
+      MYSQL_DATABASE: manufacturing_test
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/manufacturing_test.sql:/docker-entrypoint-initdb.d/manufacturing_test.sql
+
+volumes:
+  db_data:
+
+
