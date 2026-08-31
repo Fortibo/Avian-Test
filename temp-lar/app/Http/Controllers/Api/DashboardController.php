@@ -25,7 +25,7 @@ class DashboardController extends Controller
 
         if (!$latestProdDate) {
             return response()->json([
-                'sum' => [
+                'summary' => [
                     'total_machine' => Machine::count(),
                     'running_order' => WorkOrder::where('status', 'RUNNING')->count(),
                     'finished_order' => WorkOrder::where('status', 'FINISHED')->count(),
@@ -69,17 +69,19 @@ class DashboardController extends Controller
         for ($i = 0; $i < 7; $i++) {
             $date = $startDate->copy()->addDays($i);
 
-            // $target = WorkOrder::whereDate('plan_start', $date)->sum('target_qty');
+            $target = WorkOrder::whereDate('plan_start', $date->toDateString())->sum('target_qty');
 
             $good = ProductionResult::whereDate('actual_start', $date->toDateString())->sum('good_qty');
 
             $reject = ProductionResult::whereDate('actual_start', $date->toDateString())->sum('reject_qty');
 
-            $trend7Days[] = [
-                'date' => $date,
+            $dailyAchievement = $target > 0 ? round(($good / $target) * 100, 1) : 0;
 
-                'good_qty' => $good,
-                'reject_qty' => $reject,
+            $trend7Days[] = [
+                'date' => $date->toDateString(),
+                'good_qty' => (int) $good,
+                'reject_qty' => (int) $reject,
+                'achievement' => $dailyAchievement,
             ];
         }
 
@@ -108,10 +110,14 @@ class DashboardController extends Controller
                     return $workOrder->productionResults;
                 })->sum('good_qty');
 
+                $targetQty = $machine->workOrders->sum('target_qty');
+                $achievement = $targetQty > 0 ? round(($goodQty / $targetQty) * 100, 1) : 0;
+
                 return [
                     'machine_code' => $machine->machine_code,
                     'machine_name' => $machine->machine_name,
-                    'good_qty' => $goodQty,
+                    'good_qty' => (int) $goodQty,
+                    'achievement' => $achievement,
                 ];
             })
             ->sortByDesc('good_qty')
@@ -120,7 +126,7 @@ class DashboardController extends Controller
 
 
         return response()->json([
-            'sum' => [
+            'summary' => [
                 'total_machine' => $totalMachine,
                 'running_order' => $runningOrder,
                 'finished_order' => $finishedOrder,

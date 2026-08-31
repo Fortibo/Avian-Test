@@ -28,7 +28,7 @@ class ProductionResult extends Model
         'runtime_minutes' => 'integer',
         'good_qty' => 'integer',
         'reject_qty' => 'integer',
-        'achievent' => 'decimal:2',
+        'achievement' => 'decimal:2',
     ];
 
     public function workOrders(): BelongsTo

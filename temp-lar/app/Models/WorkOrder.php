@@ -52,7 +52,7 @@ class WorkOrder extends Model
     {
         return $this->hasMany(ProductionResult::class, 'wo_number', 'wo_number');
     }
-    public function downTimes(): HasMany
+    public function downtimes(): HasMany
     {
         return $this->hasMany(DownTime::class, 'wo_number', 'wo_number');
     }
