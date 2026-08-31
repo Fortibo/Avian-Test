@@ -1,59 +1,224 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Manufacturing Dashboard
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Web application untuk monitoring aktivitas produksi dan work order pada environment manufacturing.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel
+- PHP 8.3
+- MySQL/MariaDB
+- Blade
+- Tailwind CSS
+- Chart.js
+- Docker
+- Nginx
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Dashboard
 
-## Learning Laravel
+Dashboard menampilkan:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Total machine
+- Running work order
+- Finished work order
+- Production achievement
+- Good quantity
+- Reject quantity
+- Production trend 7 hari
+- Work order status breakdown
+- Top 10 machine performance
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Production Orders
 
-## Laravel Sponsors
+Halaman Production Orders menyediakan:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Daftar work order
+- Search berdasarkan WO number dan product
+- Filter product
+- Filter machine
+- Filter employee
+- Filter status
+- Filter tanggal
+- Sorting
+- Pagination
+- Query parameter
 
-### Premium Partners
+### Production Result
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Form Production Result menyediakan:
 
-## Contributing
+- Work order selection
+- Good quantity
+- Reject quantity
+- Production date
+- Runtime
+- Validation
+- Perhitungan achievement
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Requirements
 
-## Code of Conduct
+Pastikan komputer sudah memiliki:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Docker Desktop
+- Docker Compose
 
-## Security Vulnerabilities
+Tidak diperlukan instalasi PHP, Composer, MySQL, atau Nginx secara manual jika menggunakan Docker.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Installation
 
-## License
+### 1. Clone repository
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+git clone <REPOSITORY_URL>
+cd <PROJECT_DIRECTORY>
+```
+
+### 2. Copy environment file
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Linux/macOS:
+
+```bash
+cp .env.example .env
+```
+
+### 3. Build dan jalankan Docker
+
+```bash
+docker compose up -d --build
+```
+
+Docker akan menjalankan:
+
+- Laravel/PHP
+- Nginx
+- MariaDB
+
+Database `manufacturing_test` akan otomatis dibuat dan dataset akan di-import dari:
+
+```text
+database/manufacturing_test.sql
+```
+
+### 4. Generate application key
+
+Jika `APP_KEY` masih kosong:
+
+```bash
+docker compose exec app php artisan key:generate
+```
+
+### 5. Clear Laravel cache
+
+```bash
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan view:clear
+```
+
+> Jangan menjalankan `php artisan migrate:fresh` karena aplikasi menggunakan dataset `manufacturing_test` yang telah disediakan.
+
+## Access Application
+
+Setelah container berjalan, buka:
+
+```text
+http://localhost:8000
+```
+
+## Database
+
+Database yang digunakan:
+
+```text
+Database : manufacturing_test
+Host     : db
+Port     : 3306
+Username : laravel
+Password : laravel
+```
+
+Database terdiri dari:
+
+- employee
+- machine
+- product
+- work_order
+- production_result
+- downtime
+- maintenance
+- inventory_transaction
+
+## API
+
+### Dashboard
+
+```text
+GET /api/dashboard
+```
+
+Mengembalikan summary dashboard, production trend, status breakdown, dan top machine performance.
+
+### Production Orders
+
+```text
+GET /api/production/orders
+```
+
+Mendukung query parameter untuk search, filtering, sorting, dan pagination.
+
+Contoh:
+
+```text
+/api/production/orders?page=2&search=WO2026&status=FINISHED
+```
+
+### Production Result
+
+```text
+POST /api/production
+```
+
+Digunakan untuk menambahkan production result.
+
+## Important Notes
+
+Tanggal dashboard menggunakan tanggal produksi terbaru yang tersedia pada dataset, yaitu berdasarkan:
+
+```text
+MAX(production_result.actual_start)
+```
+
+bukan tanggal server (`CURDATE()`).
+
+Dengan demikian hasil dashboard tetap konsisten ketika aplikasi dijalankan pada waktu yang berbeda.
+
+## Stopping Application
+
+Untuk menghentikan container:
+
+```bash
+docker compose down
+```
+
+Untuk menjalankan kembali:
+
+```bash
+docker compose up -d
+```
+
+## Database Reset
+
+Jika database Docker perlu dibuat ulang dari file SQL:
+
+```bash
+docker compose down -v
+docker compose up -d --build
+```
+
+> Perintah `down -v` akan menghapus volume database Docker. Jangan gunakan jika ingin mempertahankan data yang sedang tersimpan.
