@@ -17,6 +17,7 @@ Tidak diperlukan instalasi PHP, Composer, MySQL/MariaDB, Node.js, atau Nginx sec
 ```bash
 git clone https://github.com/Fortibo/Avian-Test.git
 cd Avian-Test
+cd temp-lar
 ```
 
 ### 2. Setup Env
