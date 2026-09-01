@@ -5,18 +5,41 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: avian_app
     working_dir: /var/www
+
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost:8000
+      APP_KEY: base64:KbHTuE6x9bKJKkJUq0HEOfbbpmPmycElQaF9hFIrFyI=
+
+      APP_TIMEZONE: Asia/Jakarta
+      TZ: Asia/Jakarta
+
+      
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: manufacturing_test
+      DB_USERNAME: laravel
+      DB_PASSWORD: laravel
+
+      CACHE_STORE: file
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+
     volumes:
-      - .:/var/www
+      - app_data:/var/www
     depends_on:
       - db
 
+  
   nginx:
     image: nginx:alpine
     container_name: avian_nginx
     ports:
-      - 8000:80
+      - "8000:80"
     volumes:
-      - .:/var/www
+      - app_data:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
@@ -37,4 +60,5 @@ services:
       - ./database/manufacturing_test.sql:/docker-entrypoint-initdb.d/manufacturing_test.sql
 
 volumes:
+  app_data:
   db_data:

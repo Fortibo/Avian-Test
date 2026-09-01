@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ProductionResult;
 use App\Models\WorkOrder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -102,6 +103,9 @@ class ProductionController extends Controller
     public function store(Request $request)
     {
         //
+
+        $today = Carbon::now('Asia/Jakarta')->startOfDay();
+
         $validate = Validator::make(
             $request->all(),
             [
@@ -111,7 +115,7 @@ class ProductionController extends Controller
                 'production_date' => [
                     'required',
                     'date',
-                    'before_or_equal:today'
+                    'before_or_equal:' . $today->toDateString()
                 ],
                 'actual_finish' => [
                     'required',

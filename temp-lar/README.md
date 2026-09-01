@@ -1,80 +1,25 @@
 # Manufacturing Dashboard
 
-Web application untuk monitoring aktivitas produksi dan work order pada environment manufacturing.
-
-## Tech Stack
-
-- Laravel
-- PHP 8.3
-- MySQL/MariaDB
-- Blade
-- Tailwind CSS
-- Chart.js
-- Docker
-- Nginx
-
-## Features
-
-### Dashboard
-
-Dashboard menampilkan:
-
-- Total machine
-- Running work order
-- Finished work order
-- Production achievement
-- Good quantity
-- Reject quantity
-- Production trend 7 hari
-- Work order status breakdown
-- Top 10 machine performance
-
-### Production Orders
-
-Halaman Production Orders menyediakan:
-
-- Daftar work order
-- Search berdasarkan WO number dan product
-- Filter product
-- Filter machine
-- Filter employee
-- Filter status
-- Filter tanggal
-- Sorting
-- Pagination
-- Query parameter
-
-### Production Result
-
-Form Production Result menyediakan:
-
-- Work order selection
-- Good quantity
-- Reject quantity
-- Production date
-- Runtime
-- Validation
-- Perhitungan achievement
-
 ## Requirements
 
-Pastikan komputer sudah memiliki:
+Pastikan sudah terinstall:
 
+- Git
 - Docker Desktop
 - Docker Compose
 
-Tidak diperlukan instalasi PHP, Composer, MySQL, atau Nginx secara manual jika menggunakan Docker.
+Tidak diperlukan instalasi PHP, Composer, MySQL/MariaDB, Node.js, atau Nginx secara manual.
 
-## Installation
+## Instalasi
 
-### 1. Clone repository
+### 1. Clone Repo
 
 ```bash
-git clone <REPOSITORY_URL>
-cd <PROJECT_DIRECTORY>
+git clone https://github.com/Fortibo/Avian-Test.git
+cd Avian-Test
 ```
 
-### 2. Copy environment file
+### 2. Setup Env
 
 Windows PowerShell:
 
@@ -88,89 +33,90 @@ Linux/macOS:
 cp .env.example .env
 ```
 
-### 3. Build dan jalankan Docker
+Pastikan konfigurasi database pada `.env` menggunakan konfigurasi Docker berikut:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=manufacturing_test
+DB_USERNAME=laravel
+DB_PASSWORD=laravel
+```
+
+### 3. Build and Run Docker
 
 ```bash
-docker compose up -d --build
+docker-compose up -d --build
 ```
 
 Docker akan menjalankan:
 
-- Laravel/PHP
+- Laravel / PHP-FPM
 - Nginx
 - MariaDB
 
-Database `manufacturing_test` akan otomatis dibuat dan dataset akan di-import dari:
+Database menggunakan dataset yang tersedia pada:
 
 ```text
 database/manufacturing_test.sql
 ```
 
-### 4. Generate application key
+### 4. Generate Application Key
 
 Jika `APP_KEY` masih kosong:
 
 ```bash
-docker compose exec app php artisan key:generate
+docker-compose exec app php artisan key:generate
 ```
 
-### 5. Clear Laravel cache
+### 5. Clear Laravel Cache
 
 ```bash
-docker compose exec app php artisan config:clear
-docker compose exec app php artisan view:clear
+docker-compose exec app php artisan config:clear
+docker-compose exec app php artisan view:clear
 ```
 
-> Jangan menjalankan `php artisan migrate:fresh` karena aplikasi menggunakan dataset `manufacturing_test` yang telah disediakan.
+> Tidak perlu menjalankan `php artisan migrate:fresh` karena aplikasi menggunakan dataset `manufacturing_test` yang telah disediakan.
 
-## Access Application
+## Access
 
-Setelah container berjalan, buka:
+Setelah container berjalan, aplikasi dapat diakses melalui:
 
 ```text
 http://localhost:8000
 ```
 
-## Database
-
-Database yang digunakan:
-
-```text
-Database : manufacturing_test
-Host     : db
-Port     : 3306
-Username : laravel
-Password : laravel
-```
-
-Database terdiri dari:
-
-- employee
-- machine
-- product
-- work_order
-- production_result
-- downtime
-- maintenance
-- inventory_transaction
-
 ## API
 
 ### Dashboard
 
-```text
+```http
 GET /api/dashboard
 ```
 
-Mengembalikan summary dashboard, production trend, status breakdown, dan top machine performance.
+Mengembalikan data dashboard termasuk summary, production trend, status breakdown, dan top machine performance.
 
 ### Production Orders
 
-```text
+```http
 GET /api/production/orders
 ```
 
-Mendukung query parameter untuk search, filtering, sorting, dan pagination.
+Mendukung search, filtering, sorting, dan pagination.
+
+Parameter:
+
+- `page`
+- `search`
+- `product`
+- `machine`
+- `employee`
+- `status`
+- `date`
+- `sort`
+- `dir`
+- `per_page`
 
 Contoh:
 
@@ -180,45 +126,107 @@ Contoh:
 
 ### Production Result
 
-```text
+```http
 POST /api/production
 ```
 
 Digunakan untuk menambahkan production result.
 
-## Important Notes
+## Database
 
-Tanggal dashboard menggunakan tanggal produksi terbaru yang tersedia pada dataset, yaitu berdasarkan:
+Database:
+
+```text
+manufacturing_test
+```
+
+Konfigurasi koneksi Docker:
+
+```text
+Host     : db
+Port     : 3306
+Username : laravel
+Password : laravel
+```
+
+Dataset awal tersedia pada:
+
+```text
+database/manufacturing_test.sql
+```
+
+Tabel yang digunakan:
+
+```text
+employee
+machine
+product
+work_order
+production_result
+downtime
+maintenance
+inventory_transaction
+```
+
+## Docker Commands
+
+### Start
+
+```bash
+docker-compose up -d
+```
+
+### Stop
+
+```bash
+docker-compose down
+```
+
+### Rebuild
+
+```bash
+docker-compose up -d --build
+```
+
+### Check Container Status
+
+```bash
+docker-compose ps
+```
+
+### View Application Logs
+
+```bash
+docker-compose logs app --tail=100
+```
+
+### Access Laravel Container
+
+```bash
+docker-compose exec app bash
+```
+
+## Database Reset
+
+Untuk membuat ulang database menggunakan dataset SQL:
+
+```bash
+docker-compose down -v
+docker-compose up -d --build
+```
+
+> `docker-compose down -v` akan menghapus Docker volume database beserta seluruh data yang tersimpan di dalamnya. Gunakan hanya jika database perlu dibuat ulang.
+
+## Notes
+
+Tanggal referensi dashboard menggunakan tanggal produksi terbaru yang tersedia pada dataset.
+
+Tanggal referensi ditentukan berdasarkan:
 
 ```text
 MAX(production_result.actual_start)
 ```
 
-bukan tanggal server (`CURDATE()`).
+bukan berdasarkan tanggal server (`CURDATE()`).
 
-Dengan demikian hasil dashboard tetap konsisten ketika aplikasi dijalankan pada waktu yang berbeda.
-
-## Stopping Application
-
-Untuk menghentikan container:
-
-```bash
-docker compose down
-```
-
-Untuk menjalankan kembali:
-
-```bash
-docker compose up -d
-```
-
-## Database Reset
-
-Jika database Docker perlu dibuat ulang dari file SQL:
-
-```bash
-docker compose down -v
-docker compose up -d --build
-```
-
-> Perintah `down -v` akan menghapus volume database Docker. Jangan gunakan jika ingin mempertahankan data yang sedang tersimpan.
+Dengan demikian, hasil dashboard tetap konsisten ketika aplikasi dijalankan pada waktu yang berbeda.

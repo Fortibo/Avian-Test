@@ -1,3 +1,21 @@
+FROM node:20 AS frontend
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY resources ./resources
+COPY public ./public
+COPY vite.config.js ./
+
+RUN npm run build
+
+
+
+
+
 FROM php:8.3-fpm
 
 WORKDIR /var/www
